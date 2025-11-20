@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from gui.paciente_view import PacienteView
 
 class MenuView(ctk.CTkFrame):
     
@@ -44,7 +45,7 @@ class MenuView(ctk.CTkFrame):
 
 
     def open_pacientes(self):
-        print("Navegando a Gestión de Pacientes...")
+        self.app.switch_frame(PacienteView)
 
     def open_doctores(self):
         print("Navegando a Gestión de Doctores...")
