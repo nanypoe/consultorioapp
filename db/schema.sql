@@ -74,3 +74,4 @@ INSERT INTO Servicios_Consultorio (nombre_servicio, costo) VALUES ('Consulta Est
 
 ALTER TABLE Doctores
 DROP COLUMN especialidad;
+
