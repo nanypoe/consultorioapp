@@ -1,5 +1,8 @@
 import customtkinter as ctk
 from gui.paciente_view import PacienteView
+from gui.doctor_view import DoctorView
+from gui.cita_view import CitaView
+from gui.usuario_view import UsuarioView
 
 class MenuView(ctk.CTkFrame):
     
@@ -26,14 +29,13 @@ class MenuView(ctk.CTkFrame):
         button_container.grid_columnconfigure((0, 1), weight=1)
         
         
-        self.crear_boton(button_container, "Gestión de Pacientes", 0, 0, self.open_pacientes, "Manejar pacientes")
-        self.crear_boton(button_container, "Gestión de Doctores", 0, 1, self.open_doctores, "Manejar doctores")
-        self.crear_boton(button_container, "Agendar Citas", 1, 0, self.open_citas, "Manejar citas")
-        self.crear_boton(button_container, "Reportes del Sistema", 1, 1, self.open_reportes, "Generar reportes")
+        self.crear_boton(button_container, "Gestión de pacientes", 0, 0, self.open_pacientes, "Manejar pacientes")
+        self.crear_boton(button_container, "Gestión de doctores", 0, 1, self.open_doctores, "Manejar doctores")
+        self.crear_boton(button_container, "Agendar citas", 1, 0, self.open_citas, "Manejar citas")
+        self.crear_boton(button_container, "Reportes del sistema", 1, 1, self.open_reportes, "Generar reportes")
 
         if rol == 'Administrador':
-            self.crear_boton(button_container, "Gestión de Usuarios", 2, 0, self.open_usuarios, "Manejar usuarios y roles")
-            self.crear_boton(button_container, "Catálogos (Especialidades)", 2, 1, self.open_catalogos, "Manejar especialidades")
+            self.crear_boton(button_container, "Gestión de usuarios", 2, 0, self.open_usuarios, "Manejar usuarios y roles")
 
         ctk.CTkButton(self, text="Cerrar Sesión", command=self.app.logout, fg_color="red", hover_color="#800000").grid(row=3, column=0, pady=(0, 20), sticky="s")
 
@@ -48,16 +50,13 @@ class MenuView(ctk.CTkFrame):
         self.app.switch_frame(PacienteView)
 
     def open_doctores(self):
-        print("Navegando a Gestión de Doctores...")
+        self.app.switch_frame(DoctorView)
 
     def open_citas(self):
-        print("Navegando a Gestión de Citas...")
+        self.app.switch_frame(CitaView)
         
     def open_reportes(self):
         print("Navegando a Reportes...")
 
     def open_usuarios(self):
-        print("Navegando a Gestión de Usuarios...")
-
-    def open_catalogos(self):
-        print("Navegando a Catálogos (Especialidades)...")
+        self.app.switch_frame(UsuarioView)

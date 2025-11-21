@@ -71,3 +71,6 @@ CREATE TABLE IF NOT EXISTS Servicios_Consultorio (
 INSERT INTO Especialidades (nombre_especialidad) VALUES ('Medicina General'), ('Pediatría'), ('Odontología'), ('Cardiología');
 
 INSERT INTO Servicios_Consultorio (nombre_servicio, costo) VALUES ('Consulta Estándar', 50.00), ('Revisión Anual', 30.00), ('Extracción Dental', 120.00);
+
+ALTER TABLE Doctores
+DROP COLUMN especialidad;

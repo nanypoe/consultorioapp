@@ -1,6 +1,13 @@
 import customtkinter as ctk
 from services.paciente_service import PacienteService
 from datetime import datetime
+from tkcalendar import Calendar 
+import tkinter as tk 
+
+HEADER_BG = "#7F7F7F" 
+ROW_BG_ODD = "#B3B3B3" 
+ROW_BG_EVEN = "#999999" 
+ROW_BG_SELECTED = "#4682B4"
 
 class PacienteView(ctk.CTkFrame):
     
@@ -11,8 +18,9 @@ class PacienteView(ctk.CTkFrame):
         self.app = app
         self.paciente_service = PacienteService()
         self.pacientes_data = []
-        self.selected_paciente_id = None 
-
+        self.selected_paciente_id = None
+        self.selected_row_labels = [] 
+        
         self.grid_columnconfigure(0, weight=1) 
         self.grid_rowconfigure(0, weight=0) 
         self.grid_rowconfigure(1, weight=1) 
@@ -25,7 +33,7 @@ class PacienteView(ctk.CTkFrame):
         self.list_container.grid_columnconfigure(0, weight=1)
         self.list_container.grid_rowconfigure(0, weight=1)
         
-        self.scroll_frame = ctk.CTkScrollableFrame(self.list_container, label_text="Lista de Pacientes", label_font=ctk.CTkFont(size=14, weight="bold"))
+        self.scroll_frame = ctk.CTkScrollableFrame(self.list_container, label_text="Lista de pacientes", label_font=ctk.CTkFont(size=14, weight="bold"))
         self.scroll_frame.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
         self.scroll_frame.grid_columnconfigure(0, weight=1)
 
@@ -36,7 +44,17 @@ class PacienteView(ctk.CTkFrame):
         
         self.create_entry_row(self.action_frame, 0, "Nombre:", "entry_nombre", 0, "Apellido:", "entry_apellido", 2)
         
-        self.create_entry_row(self.action_frame, 1, "F. Nacimiento (YYYY-MM-DD):", "entry_fecha", 0, "Teléfono:", "entry_telefono", 2)
+        ctk.CTkLabel(self.action_frame, text="F. Nacimiento (YYYY-MM-DD):").grid(row=1, column=0, padx=10, pady=5, sticky="w")
+        
+        self.entry_fecha = ctk.CTkEntry(self.action_frame, state="readonly", width=120) 
+        self.entry_fecha.grid(row=1, column=1, padx=(10, 5), pady=5, sticky="w")
+        
+        self.btn_fecha_picker = ctk.CTkButton(self.action_frame, text="📅", width=30, command=self.open_datepicker)
+        self.btn_fecha_picker.grid(row=1, column=1, padx=(140, 10), pady=5, sticky="w")
+        
+        ctk.CTkLabel(self.action_frame, text="Teléfono:").grid(row=1, column=2, padx=10, pady=5, sticky="w")
+        self.entry_telefono = ctk.CTkEntry(self.action_frame)
+        self.entry_telefono.grid(row=1, column=3, padx=10, pady=5, sticky="ew")        
         
         ctk.CTkLabel(self.action_frame, text="Dirección:").grid(row=2, column=0, padx=10, pady=5, sticky="w")
         self.entry_direccion = ctk.CTkEntry(self.action_frame, width=500)
@@ -70,7 +88,46 @@ class PacienteView(ctk.CTkFrame):
         entry2 = ctk.CTkEntry(container)
         entry2.grid(row=row, column=col2 + 1, padx=10, pady=5, sticky="ew")
         setattr(self, attr2, entry2)
+
+    def open_datepicker(self):
+        """Abre una ventana de calendario modal para seleccionar la fecha."""
         
+        top = tk.Toplevel(self)
+        top.title("Seleccionar fecha")
+        try:
+            current_date = datetime.strptime(self.entry_fecha.get(), '%Y-%m-%d')
+        except ValueError:
+            current_date = datetime.now()
+
+        cal = Calendar(top, 
+                       selectmode='day',
+                       date_pattern='y-mm-dd',
+                       year=current_date.year,
+                       month=current_date.month,
+                       day=current_date.day)
+        
+        cal.pack(padx=20, pady=20)
+
+        def set_date():
+            selected_date = cal.get_date()
+            self.entry_fecha.configure(state="normal") 
+            self.entry_fecha.delete(0, 'end')
+            self.entry_fecha.insert(0, selected_date)
+            self.entry_fecha.configure(state="readonly") 
+            top.destroy() 
+
+        ctk.CTkButton(top, text="Aceptar", command=set_date).pack(pady=(0, 20))
+        
+        top.grab_set() 
+        
+        top.update_idletasks()
+        width = top.winfo_width()
+        height = top.winfo_height()
+        x = self.master.winfo_x() + (self.master.winfo_width() // 2) - (width // 2)
+        y = self.master.winfo_y() + (self.master.winfo_height() // 2) - (height // 2)
+        top.geometry(f'{width}x{height}+{x}+{y}')
+        top.resizable(False, False)
+
     def load_pacientes(self):
         """Carga los pacientes de la DB y actualiza la lista visual."""
         
@@ -79,37 +136,61 @@ class PacienteView(ctk.CTkFrame):
             
         self.pacientes_data = self.paciente_service.obtener_todos_pacientes()
         self.selected_paciente_id = None
-        
+        self.selected_row_labels = [] 
+
         if not self.pacientes_data:
             ctk.CTkLabel(self.scroll_frame, text="No hay pacientes registrados.").grid(row=0, column=0, padx=10, pady=10)
             return
 
         headers = ["ID", "Nombre", "Apellido", "F. Nacimiento", "Teléfono", "Dirección"]
         for col, header in enumerate(headers):
-             ctk.CTkLabel(self.scroll_frame, text=header, font=ctk.CTkFont(weight="bold")).grid(row=0, column=col, padx=5, pady=5)
+             ctk.CTkLabel(self.scroll_frame, text=header, font=ctk.CTkFont(weight="bold"), 
+                          fg_color=HEADER_BG, corner_radius=5, anchor="w"
+                          ).grid(row=0, column=col, padx=5, pady=5, sticky="ew")
              self.scroll_frame.grid_columnconfigure(col, weight=1)
 
         for i, paciente in enumerate(self.pacientes_data):
             paciente_id = paciente[0]
             
+            row_bg_color = ROW_BG_EVEN if i % 2 == 0 else ROW_BG_ODD
+            
+            row_labels = []
+
             for col, data in enumerate(paciente):
                 if col == 3 and isinstance(data, datetime):
                     text = data.strftime('%Y-%m-%d')
                 else:
                     text = str(data)
                     
-                label = ctk.CTkLabel(self.scroll_frame, text=text, width=70, anchor="w")
-                label.grid(row=i + 1, column=col, padx=5, pady=2, sticky="ew")
+                label = ctk.CTkLabel(self.scroll_frame, text=text, width=70, anchor="w",
+                                     fg_color=row_bg_color, corner_radius=0)
                 
-                label.bind("<Button-1>", lambda event, pid=paciente_id, pdata=paciente: self.select_paciente(pid, pdata))
+                label.grid(row=i + 1, column=col, padx=1, pady=1, sticky="ew") 
+               
+                label.bind("<Button-1>", lambda event, pid=paciente_id, pdata=paciente, r_labels=row_labels: self.select_paciente(pid, pdata, r_labels))
+                
+                row_labels.append(label)
 
 
-    def select_paciente(self, paciente_id, paciente_data):
-        """Maneja la selección de un paciente de la lista y llena el formulario."""
+    def select_paciente(self, paciente_id, paciente_data, current_row_labels):
+        """Maneja la selección de un paciente, llena el formulario y resalta la fila."""
         
+        if self.selected_row_labels:
+            for label in self.selected_row_labels:
+                row_index = label.grid_info()['row']
+                row_bg_color = ROW_BG_EVEN if (row_index - 1) % 2 == 0 else ROW_BG_ODD
+                label.configure(fg_color=row_bg_color)
+        
+        for label in current_row_labels:
+            label.configure(fg_color=ROW_BG_SELECTED)
+            
+        self.selected_row_labels = current_row_labels
         self.selected_paciente_id = paciente_id
+        
         self.msg_label.configure(text=f"Paciente ID {paciente_id} seleccionado.", text_color="blue")
         
+        self.entry_fecha.configure(state="normal") 
+
         self.entry_nombre.delete(0, 'end')
         self.entry_apellido.delete(0, 'end')
         self.entry_fecha.delete(0, 'end')
@@ -124,6 +205,8 @@ class PacienteView(ctk.CTkFrame):
         
         self.entry_telefono.insert(0, paciente_data[4])
         self.entry_direccion.insert(0, paciente_data[5])
+        
+        self.entry_fecha.configure(state="readonly")
 
 
     def action_crear(self):
@@ -190,9 +273,27 @@ class PacienteView(ctk.CTkFrame):
 
     def clear_entries(self):
         """Limpia todos los campos de entrada y la selección."""
+        if self.selected_row_labels:
+            for label in self.selected_row_labels:
+                row_index = label.grid_info()['row']
+                row_bg_color = ROW_BG_EVEN if (row_index - 1) % 2 == 0 else ROW_BG_ODD
+                label.configure(fg_color=row_bg_color)
+            self.selected_row_labels = []
+            
         self.entry_nombre.delete(0, 'end')
         self.entry_apellido.delete(0, 'end')
         self.entry_fecha.delete(0, 'end')
+        self.entry_telefono.delete(0, 'end')
+        self.entry_direccion.delete(0, 'end')
+        self.selected_paciente_id = None
+
+        self.entry_nombre.delete(0, 'end')
+        self.entry_apellido.delete(0, 'end')
+        
+        self.entry_fecha.configure(state="normal") 
+        self.entry_fecha.delete(0, 'end')
+        self.entry_fecha.configure(state="readonly") 
+        
         self.entry_telefono.delete(0, 'end')
         self.entry_direccion.delete(0, 'end')
         self.selected_paciente_id = None
