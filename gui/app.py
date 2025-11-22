@@ -5,6 +5,11 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         
+        # SOLUCIÓN CORRUPCIÓN DE PANTALLA
+        # Fija el escalado para evitar conflictos con el gestor de ventanas
+        ctk.set_widget_scaling(1.0)
+        ctk.set_window_scaling(1.0)
+        
         self.title("Sistema de Gestión de Consultorio - Login")
         self.geometry("800x600")
         ctk.set_appearance_mode("System")
@@ -41,5 +46,7 @@ class App(ctk.CTk):
 
 
 if __name__ == "__main__":
-    app = App()
-    app.mainloop()
+    # Esta sección debe estar vacía para evitar que se ejecute dos veces (ya se ejecuta desde main.py)
+    # Ya que está siendo importada desde main.py
+    # Si la deja, es un potencial error.
+    pass

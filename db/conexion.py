@@ -1,15 +1,10 @@
 import pymysql
 import traceback
 from pymysql import Error
+from db.config import DB_CONFIG
 
 class ConexionDB:
-    _DATABASE = { 
-        'host': '127.0.0.1', 
-        'database': 'consultorio_db', 
-        'user': 'root', 
-        'password': '',
-        'port': 3306,
-    }
+    
 
     _instancia = None
     _conexion = None
@@ -24,21 +19,17 @@ class ConexionDB:
             print("Intentando conectar a la base de datos...")
             try:
                 self._conexion = pymysql.connect(
-                    host=self._DATABASE['host'],
-                    user=self._DATABASE['user'],
-                    password=self._DATABASE['password'],
-                    database=self._DATABASE['database'],
-                    port=self._DATABASE['port']
+                    host=DB_CONFIG['host'],
+                    user=DB_CONFIG['user'],
+                    password=DB_CONFIG['password'],
+                    database=DB_CONFIG['database'],
+                    port=DB_CONFIG['port']
                 )
                 print("Conexión a MySQL establecida con éxito.")
                 return True
             except Exception as e:
                 print("==============================================")
                 print("ERROR CRÍTICO DETECTADO DURANTE LA CONEXIÓN")
-                print("==============================================")
-                print(f"Error: {e}")
-                traceback.print_exc()
-                print("==============================================")
                 self._conexion = None
                 return False
         return True

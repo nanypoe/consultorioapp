@@ -6,6 +6,7 @@ from gui.usuario_view import UsuarioView
 from gui.historial_view import HistorialView
 from gui.servicios_view import ServiciosView
 from gui.reportes_view import ReportesView
+from gui.backup_view import BackupView
 
 class MenuView(ctk.CTkFrame):
     
@@ -71,3 +72,6 @@ class MenuView(ctk.CTkFrame):
 
     def open_servicios(self):
         self.app.switch_frame(ServiciosView)
+
+    def open_backup(self):
+        self.app.switch_frame(BackupView)

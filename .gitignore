@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+
+# Entornos virtuales
+venv/
+env/
+.venv/
+
+# PyInstaller y Distribución
+build/
+dist/
+*.spec
+*.exe
+*.bin
+
+# CustomTkinter y temporales
+*.log
+*.tmp
+
+# Archivos de la base de datos (seguridad)
+db_backups/
+reportes_generados/
