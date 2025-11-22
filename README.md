@@ -1,4 +1,5 @@
-# Proyecto Final Curso de Programación: Sistema de Gestión de Consultorio Médico
+# Curso de programación | Proyecto final
+## Sistema de gestión de consultorio médico
 
 Este proyecto es un **Sistema de Gestión de Citas y Pacientes** desarrollado en Python, diseñado para modernizar y agilizar los procesos administrativos de un consultorio médico. Utiliza una arquitectura modular (MVC), **CustomTkinter** para una interfaz gráfica moderna y **MySQL** para una gestión de datos robusta.
 
