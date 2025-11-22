@@ -5,8 +5,7 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         
-        # SOLUCIÓN CORRUPCIÓN DE PANTALLA
-        # Fija el escalado para evitar conflictos con el gestor de ventanas
+        # Solución Corrupción de Pantalla
         ctk.set_widget_scaling(1.0)
         ctk.set_window_scaling(1.0)
         
@@ -25,12 +24,16 @@ class App(ctk.CTk):
         
         self.switch_frame(LoginView)
 
-    def switch_frame(self, frame_class, **kwargs):
+    # Lógica centralizada para cambiar de vista
+    # Usa 'master' para la ventana principal y 'app' para la referencia a la clase App
+    def switch_frame(self, frame_class, **kwargs): 
         
         if self.current_frame is not None:
             self.current_frame.destroy()
         
-        new_frame = frame_class(master=self, app=self, **kwargs)
+        # IMPORTANTE: Los frames hijos deben recibir 'master' (la ventana CTk) y 'app' (la clase App)
+        # La vista de menú (MenuView) usa 'app.logout'
+        new_frame = frame_class(master=self, app=self, **kwargs) 
         self.current_frame = new_frame
         
         self.current_frame.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
@@ -38,6 +41,7 @@ class App(ctk.CTk):
         if hasattr(new_frame, 'title'):
             self.title(new_frame.title)
 
+    # Función 'logout' definida en la clase App
     def logout(self):
         
         self.user_session = None
@@ -46,7 +50,4 @@ class App(ctk.CTk):
 
 
 if __name__ == "__main__":
-    # Esta sección debe estar vacía para evitar que se ejecute dos veces (ya se ejecuta desde main.py)
-    # Ya que está siendo importada desde main.py
-    # Si la deja, es un potencial error.
     pass
